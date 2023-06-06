@@ -1,0 +1,15 @@
+module r_top(clk,rst,read_enb0,read_enb1,read_enb2,data_in,pkt_valid,data_out0,data_out1,data_out2,valid_out0,valid_out1,valid_out2,error,busy);   
+input clk,rst,read_enb0,read_enb1,read_enb2,pkt_valid;
+input [7:0] data_in;
+output valid_out0,valid_out1,valid_out2,error,busy;
+output [7:0] data_out0,data_out1,data_out2;
+wire fifo_full,rst_int_reg,detect_addr,ld_state,laf_state,lfd_state,parity_done,low_pkt_valid,write_enb_reg,empty0,empty1,empty2,soft_rst0,soft_rst1,soft_rst2,full0,full1,full2,full_state;
+wire [2:0]write_enb;
+r_reg dut1(clk,rst,pkt_valid,data_in,fifo_full,rst_int_reg,detect_addr,ld_state,laf_state,full_state,lfd_state,parity_done,low_pkt_valid,error,dout);
+r_synch dut4(detect_addr,data_in[1:0],write_enb_reg,clk,rst,valid_out0,valid_out1,valid_out2,read_enb0,read_enb1,read_enb2,write_enb[2:0],fifo_full,empty0,empty1,empty2,soft_rst0,soft_rst1,soft_rst2,full0,full1,full2);
+r_fifo dut2_0(clk,rst,write_enb[0],read_enb0,soft_rst0,dout,lfd_state,empty0,data_out0,full0);
+r_fifo dut2_1(clk,rst,write_enb[1],read_enb1,soft_rst1,dout,lfd_state,empty1,data_out1,full1);
+r_fifo dut2_2(clk,rst,write_enb[2],read_enb2,soft_rst2,dout,lfd_state,empty2,data_out2,full2);
+r_fsm dut3(clk,rst,pkt_valid,busy,parity_done,data_in[1:0],soft_rst0,soft_rst1,soft_rst2,fifo_full,low_pkt_valid,empty0,empty1,empty2,detect_addr,ld_state,laf_state,full_state,write_enb_reg,rst_int_reg,lfd_state);
+
+endmodule
